@@ -7,8 +7,6 @@ module.exports = {
   NOTIFICATION_SERVICE_ERROR: 'PUSH_RECEIVER:::NOTIFICATION_SERVICE_ERROR',
   // Event to be sent from renderer process to trigger service stop
   STOP_NOTIFICATION_SERVICE: 'PUSH_RECEIVER:::STOP_NOTIFICATION_SERVICE',
-  // Event to be sent from renderer process to trigger service destroy
-  DESTROY_NOTIFICATION_SERVICE: 'PUSH_RECEIVER:::DESTROY_NOTIFICATION_SERVICE',
   // Event sent to the renderer process when a notification has been received
   NOTIFICATION_RECEIVED: 'PUSH_RECEIVER:::NOTIFICATION_RECEIVED',
   // Event sent to the renderer process when the FCM token has been updated

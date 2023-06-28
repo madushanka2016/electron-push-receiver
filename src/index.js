@@ -6,7 +6,6 @@ const {
   NOTIFICATION_SERVICE_STARTED,
   NOTIFICATION_SERVICE_ERROR,
   STOP_NOTIFICATION_SERVICE,
-  DESTROY_NOTIFICATION_SERVICE,
   NOTIFICATION_RECEIVED,
   TOKEN_UPDATED,
 } = require('./constants');
@@ -18,7 +17,6 @@ module.exports = {
   NOTIFICATION_SERVICE_STARTED,
   NOTIFICATION_SERVICE_ERROR,
   STOP_NOTIFICATION_SERVICE,
-  DESTROY_NOTIFICATION_SERVICE,
   NOTIFICATION_RECEIVED,
   TOKEN_UPDATED,
   setup,
@@ -30,14 +28,18 @@ let started = false;
 //  used as a ref to client instance
 let client;
 
+// used as a ref to username for electron store
+let userId;
+
 // To be call from the main process
-function setup(webContents) {
+function setup() {
   // Will be called by the renderer process
-  ipcMain.on(START_NOTIFICATION_SERVICE, async (_, senderId) => {
+  ipcMain.on(START_NOTIFICATION_SERVICE, async ({ sender: webContents }, { senderId, user }) => {
+    userId = user;
     // Retrieve saved credentials
-    let credentials = store.get('credentials');
+    let credentials = store.get(`${userId}-credentials`);
     // Retrieve saved senderId
-    const savedSenderId = store.get('senderId');
+    const savedSenderId = store.get(`${userId}-senderId`);
     if (started) {
       webContents.send(NOTIFICATION_SERVICE_STARTED, (credentials.fcm || {}).token);
       return;
@@ -45,14 +47,14 @@ function setup(webContents) {
     started = true;
     try {
       // Retrieve saved persistentId : avoid receiving all already received notifications on start
-      const persistentIds = store.get('persistentIds') || [];
+      const persistentIds = store.get(`${userId}-persistentIds`) || [];
       // Register if no credentials or if senderId has changed
       if (!credentials || savedSenderId !== senderId) {
         credentials = await register(senderId);
         // Save credentials for later use
-        store.set('credentials', credentials);
+        store.set(`${userId}-credentials`, credentials);
         // Save senderId
-        store.set('senderId', senderId);
+        store.set(`${userId}-senderId`, senderId);
         // Notify the renderer process that the FCM token has changed
         webContents.send(TOKEN_UPDATED, credentials.fcm.token);
       }
@@ -77,30 +79,20 @@ function setup(webContents) {
     }
     started = false;
   });
-
-  ipcMain.on(DESTROY_NOTIFICATION_SERVICE, () => {
-    // destroy push notifications service
-    if (client !== undefined) {
-      client.destroy();
-    }
-    // clear cache
-    store.set('credentials', null);
-    store.set('senderId', null);
-    store.set('persistentIds', null);
-    started = false;
-  });
 }
 
 // Will be called on new notification
 function onNotification(webContents) {
   return ({ notification, persistentId }) => {
-    const persistentIds = store.get('persistentIds') || [];
+    const persistentIds = store.get(`${userId}-persistentIds`) || [];
     // Update persistentId
-    store.set('persistentIds', [...persistentIds, persistentId]);
+    store.set(`${userId}-persistentIds`, [...persistentIds, persistentId]);
     // Notify the renderer process that a new notification has been received
     // And check if window is not destroyed for darwin Apps
     if (!webContents.isDestroyed()) {
       webContents.send(NOTIFICATION_RECEIVED, notification);
+    } else {
+      console.warn('PUSH_RECEIVER:::Web Content is destroyed. Message will not be sent');
     }
   };
 }
