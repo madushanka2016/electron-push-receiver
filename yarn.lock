@@ -2013,10 +2013,10 @@ punycode@^2.1.0, punycode@^2.1.1:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.0.tgz#f67fa67c94da8f4d0cfff981aee4118064199b8f"
   integrity sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==
 
-push-receiver@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/push-receiver/-/push-receiver-2.1.1.tgz#88d273f02e3a288aa18b688df1154790edeafdd2"
-  integrity sha512-2f+Rglq6B+J6x06JEypDkm48vGf0lPCSjqO/+1F7Pg/8gippvZRSb/vloWuQlWGJw8ulma7lgPei34HAnJba5w==
+push-receiver-v2@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/push-receiver-v2/-/push-receiver-v2-2.2.0.tgz#7691861ba341ea0d32f3d908320f98ccf1f59020"
+  integrity sha512-1jpbr2+NzPX/SrmyTp9/QJegKtnep4We0iqS0GmgkE+VYQhyuRnYG40XNKQ+vt0Isxj4h6yzaS6hA6IIjBv9LA==
   dependencies:
     http_ece "^1.0.5"
     long "^3.2.0"

@@ -9,7 +9,7 @@
   "types": "src/electron-push-receiver.d.ts",
   "dependencies": {
     "electron-store": "^8.1.0",
-    "push-receiver": "^2.1.1"
+    "push-receiver-v2": "^2.2.0"
   },
   "devDependencies": {
     "eslint": "^4.9.0",

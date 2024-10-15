@@ -1,4 +1,4 @@
-const { register, listen } = require('push-receiver');
+const { register, listen } = require('push-receiver-v2');
 const { ipcMain } = require('electron');
 const Store = require('electron-store');
 const {
@@ -34,7 +34,7 @@ let userId;
 // To be call from the main process
 function setup() {
   // Will be called by the renderer process
-  ipcMain.on(START_NOTIFICATION_SERVICE, async ({ sender: webContents }, { senderId, user }) => {
+  ipcMain.on(START_NOTIFICATION_SERVICE, async ({ sender: webContents }, { senderId, user, firebaseConfig }) => {
     userId = user;
     // Retrieve saved credentials
     let credentials = store.get(`${userId}-credentials`);
@@ -50,7 +50,7 @@ function setup() {
       const persistentIds = store.get(`${userId}-persistentIds`) || [];
       // Register if no credentials or if senderId has changed
       if (!credentials || savedSenderId !== senderId) {
-        credentials = await register(senderId);
+        credentials = await register(firebaseConfig);
         // Save credentials for later use
         store.set(`${userId}-credentials`, credentials);
         // Save senderId
