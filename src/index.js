@@ -34,7 +34,7 @@ let userId;
 // To be call from the main process
 function setup() {
   // Will be called by the renderer process
-  ipcMain.on(START_NOTIFICATION_SERVICE, async ({ sender: webContents }, { senderId, user, firebaseConfig }) => {
+  ipcMain.on(START_NOTIFICATION_SERVICE, async ({ sender: webContents }, { firebaseConfig, user }) => {
     userId = user;
     // Retrieve saved credentials
     let credentials = store.get(`${userId}-credentials`);
@@ -49,12 +49,12 @@ function setup() {
       // Retrieve saved persistentId : avoid receiving all already received notifications on start
       const persistentIds = store.get(`${userId}-persistentIds`) || [];
       // Register if no credentials or if senderId has changed
-      if (!credentials || savedSenderId !== senderId) {
+      if (!credentials || savedSenderId !== firebaseConfig.senderId) {
         credentials = await register(firebaseConfig);
         // Save credentials for later use
         store.set(`${userId}-credentials`, credentials);
         // Save senderId
-        store.set(`${userId}-senderId`, senderId);
+        store.set(`${userId}-senderId`, firebaseConfig.senderId);
         // Notify the renderer process that the FCM token has changed
         webContents.send(TOKEN_UPDATED, credentials.fcm.token);
       }
