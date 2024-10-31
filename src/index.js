@@ -49,12 +49,14 @@ function setup() {
       // Retrieve saved persistentId : avoid receiving all already received notifications on start
       const persistentIds = store.get(`${userId}-persistentIds`) || [];
       // Register if no credentials or if senderId has changed
+
       if (!credentials || savedSenderId !== config.firebase.projectID) {
         credentials = await register(config);
         // Save credentials for later use
         store.set(`${userId}-credentials`, credentials);
         // Save senderId
         store.set(`${userId}-senderId`, config.firebase.projectID);
+
         // Notify the renderer process that the FCM token has changed
         webContents.send(TOKEN_UPDATED, credentials.fcm.token);
       }
